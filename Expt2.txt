@@ -1,0 +1,42 @@
+CREATE TABLE sales (
+    region VARCHAR2(50),
+    product VARCHAR2(50),
+    year NUMBER,
+    quarter NUMBER,
+    amount NUMBER
+);
+
+INSERT INTO sales VALUES('North','Product A',2020,1,1000);
+INSERT INTO sales VALUES('North','Product B',2020,1,1500);
+INSERT INTO sales VALUES('North','Product A',2020,2,1200);
+INSERT INTO sales VALUES('North','Product B',2020,2,1800);
+INSERT INTO sales VALUES('South','Product A',2020,1,900);
+INSERT INTO sales VALUES('South','Product B',2020,1,1300);
+INSERT INTO sales VALUES('South','Product A',2020,2,1100);
+INSERT INTO sales VALUES('South','Product B',2020,2,1700);
+
+COMMIT;
+
+SELECT * FROM sales;
+
+-- Slice
+SELECT * FROM sales WHERE region = 'North';
+
+-- Dice
+SELECT * FROM sales WHERE region = 'North' AND product = 'Product A';
+
+-- Drilldown (Roll Down)
+SELECT region, product, year, SUM(amount) AS total_amount FROM sales GROUP BY ROLLUP(region, product, year);
+
+-- Rollup (Drill Up)
+SELECT region, product, SUM(amount) AS total_amount FROM sales GROUP BY ROLLUP(region, product);
+
+-- Pivot (Rotate)
+SELECT * FROM (
+    SELECT region , product, quarter, amount From sales
+)
+Pivot (
+    SUM(amount)
+    For quarter IN (1 AS Q1, 2 AS Q2)
+);
+
